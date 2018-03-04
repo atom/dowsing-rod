@@ -1,0 +1,21 @@
+{
+  "name": "@atom/dowsing-rod",
+  "version": "1.0.0",
+  "description": "Dowse for compatible Python 2 installations to run node-gyp",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "bin": {
+    "with-python2-env": "./with-python2-env.js"
+  },
+  "keywords": [
+    "node-gyp",
+    "python"
+  ],
+  "author": "Ash Wilson <smashwilson@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "semver": "^5.5.0"
+  }
+}
