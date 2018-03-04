@@ -1,4 +1,5 @@
 const semver = require('semver')
+const fs = require('fs')
 const path = require('path')
 const {execFile, access} = require('./helper')
 
