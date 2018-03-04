@@ -79,6 +79,7 @@ function writeFile(filePath, contents) {
 
 module.exports = {
   execFile,
+  spawn,
   access,
   readFile,
   writeFile
