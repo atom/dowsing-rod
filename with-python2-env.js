@@ -17,7 +17,7 @@ getPythonBin({})
 
     if (rest.length === 0) {
       console.log(`PYTHON=${pythonBin}`)
-      return null
+      return {code: 0}
     }
 
     const cmd = rest[0]
