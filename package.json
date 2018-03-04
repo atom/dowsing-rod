@@ -2,6 +2,7 @@
   "name": "@atom/dowsing-rod",
   "version": "1.0.0",
   "description": "Dowse for compatible Python 2 installations to run node-gyp",
+  "repository": "github:atom/dowsing-rod",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
