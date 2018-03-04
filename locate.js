@@ -20,13 +20,8 @@ function checkPython(candidate) {
         {encoding: 'utf8', env: {TERM: 'dumb'}}
       )
     })
-    .then(stdout => {
-      const version = stdout.trim()
-        .replace(/\+/g, '')
-        .replace(/rc.*$/ig, '')
-      return semver.satisfies(version, '>=2.5.0 <3.0.0')
-    })
-    .catch(() => false)
+    .then(stdout => stdout.trim().replace(/\+/g, '').replace(/rc.*$/ig, ''))
+    .catch(() => null)
 }
 
 function findOnPath(options) {
@@ -36,33 +31,47 @@ function findOnPath(options) {
   }
 
   const pathDirs = process.env.PATH.split(path.delimiter)
-  const binaries = ['python2.7', 'python2', 'python']
+  const binaries = ['python', 'python2']
+  const byVersion = new Map()
 
   function nextBinary(pathDir, i) {
     if (i >= binaries.length) {
-      return Promise.resolve(null)
+      return Promise.resolve()
     }
 
     const candidate = path.join(pathDir, binaries[i])
     return checkPython(candidate)
-      .then(ok => {
-        return ok ? candidate : nextBinary(pathDir, i + 1)
+      .then(version => {
+        if (version !== null) {
+          byVersion.set(version, candidate)
+        }
+        return nextBinary(pathDir, i + 1)
       })
   }
 
   function nextPath() {
     if (pathDirs.length <= 0) {
-      return Promise.resolve(null)
+      return Promise.resolve()
     }
     const pathDir = pathDirs.shift()
 
     return nextBinary(pathDir, 0)
-      .then(candidate => {
-        return candidate !== null ? candidate : nextPath()
+      .then(nextPath)
+  }
+
+  function bestCandidate() {
+    return nextPath()
+      .then(() => {
+        const versions = Array.from(byVersion.keys())
+        const max = semver.maxSatisfying(versions, '>=2.5.0 <3.0.0')
+        if (max === null) {
+          return null
+        }
+        return byVersion.get(max)
       })
   }
 
-  return nextPath()
+  return bestCandidate()
 }
 
 function locatePython(options) {
