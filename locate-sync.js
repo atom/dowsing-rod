@@ -55,6 +55,10 @@ function locatePythonSync(options) {
     return process.env.PYTHON
   }
 
+  if (process.env.CHOSEN_PYTHON2) {
+    return process.env.CHOSEN_PYTHON2
+  }
+
   const pythonBin = readNpmConfigSync(options)
   if (pythonBin) {
     return pythonBin

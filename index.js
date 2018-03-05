@@ -63,7 +63,7 @@ function detectEnv(env) {
 }
 
 function modifyEnv(env, pythonBin) {
-  env.PYTHON = pythonBin
+  env.CHOSEN_PYTHON2 = pythonBin
 
   const binPath = path.join(__dirname, 'py2-bin')
   if (env.PATH) {

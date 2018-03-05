@@ -10,7 +10,7 @@ const env = Object.assign({}, process.env)
 setPythonEnv({}, env)
   .then(() => {
     if (rest.length === 0) {
-      console.log(`PYTHON=${env.PYTHON}`)
+      console.log(`PYTHON=${env.CHOSEN_PYTHON2}`)
       return {code: 0}
     }
 
