@@ -47,19 +47,24 @@ If you're launching node-gyp as a subprocess yourself (like we do within the :at
 const path = require('path')
 const dowsingRod = require('@atom/dowsing-rod')
 
-// Options are optional with the defaults shown.
-const promise = dowsingRod.setPythonEnv({
+const options = {
   // npm binary used to read config settings
   npmBin: 'npm',
 
   // file to store located Python binary
   pythonBinFile: path.join(process.cwd(), '.python2-bin')
-})
+}
+
+// Options are optional with the defaults shown.
+const promise = dowsingRod.setPythonEnv(options, process.env)
 
 // Any exec or spawn calls after the returned promise resolves will have the correct Python environments.
 // Or, if you wish to do something with the path yourself:
 
-// Options are accepted as above.
-dowsingRod.getPythonBin({})
+dowsingRod.getPythonBin(options)
   .then(pythonBin => console.log(`Python binary: ${pythonBin}`))
+
+// Synchronous variants are also exported:
+dowsingRod.setPythonEnvSync(options, process.env)
+const pythonBin = dowsingRod.getPythonBinSync(options)
 ```
