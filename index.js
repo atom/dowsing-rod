@@ -27,7 +27,7 @@ function setPythonEnv(options) {
   return getPythonBin(options)
     .then(pythonBin => {
       process.env.PYTHON = pythonBin
-      process.env.PATH = path.join(__dirname, 'bin') + path.delimiter + process.env.PATH
+      process.env.PATH = path.join(__dirname, 'py2-bin') + path.delimiter + process.env.PATH
     })
 }
 
