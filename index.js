@@ -23,15 +23,53 @@ function getPythonBin(options) {
     )
 }
 
-function setPythonEnv(options) {
+// Detect an existing dowsing-rod PATH injection. If one is present, shuffle it to the front of the PATH and return
+// true. Otherwise, return false.
+function detectEnv(env) {
+  if (!env.PATH) {
+    return
+  }
+
+  const pathParts = env.PATH.split(path.delimiter)
+  const pyBinIndex = pathParts.findIndex(part => path.resolve(part).endsWith(path.sep + 'py2-bin'))
+
+  if (pyBinIndex === 0) {
+    // Python environment already set as the highest priority
+    return true
+  }
+  if (pyBinIndex > 0) {
+    // Python environment already set, but not at the highest priority
+    const newPathParts = [pathParts[pyBinIndex]]
+    newPathParts.push(...pathParts.slice(0, pyBinIndex))
+    newPathParts.push(...pathParts.slice(pyBinIndex + 1))
+    env.PATH = newPathParts.join(path.delimiter)
+    return true
+  }
+}
+
+function modifyEnv(env, pythonBin) {
+  env.PYTHON = pythonBin
+
+  const binPath = path.join(__dirname, 'py2-bin')
+  if (env.PATH) {
+    env.PATH = binPath + path.delimiter + env.PATH
+  } else {
+    env.PATH = binPath
+  }
+}
+
+function setPythonEnv(options, env) {
+  if (detectEnv(env)) {
+    return Promise.resolve()
+  }
+
   return getPythonBin(options)
-    .then(pythonBin => {
-      process.env.PYTHON = pythonBin
-      process.env.PATH = path.join(__dirname, 'py2-bin') + path.delimiter + process.env.PATH
-    })
+    .then(pythonBin => modifyEnv(env, pythonBin))
 }
 
 module.exports = {
+  detectEnv,
+  modifyEnv,
   getPythonBin,
   setPythonEnv
 }

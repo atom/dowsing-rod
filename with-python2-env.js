@@ -2,21 +2,15 @@
 
 const path = require('path')
 const {spawn} = require('./helper')
-const {getPythonBin} = require('.')
+const {setPythonEnv} = require('.')
 
 const rest = process.argv.slice(2)
 
-getPythonBin({})
-  .then(pythonBin => {
-    const env = {}
-    for (const k of Object.keys(process.env)) {
-      env[k] = process.env[k]
-    }
-    env.PYTHON = pythonBin
-    env.PATH = path.join(__dirname, 'bin') + path.delimiter + env.PATH
-
+const env = Object.assign({}, process.env)
+setPythonEnv({}, env)
+  .then(() => {
     if (rest.length === 0) {
-      console.log(`PYTHON=${pythonBin}`)
+      console.log(`PYTHON=${env.PYTHON}`)
       return {code: 0}
     }
 
