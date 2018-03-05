@@ -1,6 +1,8 @@
 const path = require('path')
+const fs = require('fs')
 
 const {locatePython} = require('./locate')
+const {locatePythonSync} = require('./locate-sync')
 const {readFile, writeFile} = require('./helper')
 
 const DEFAULTS = {
@@ -21,6 +23,19 @@ function getPythonBin(options) {
           })
       }
     )
+}
+
+function getPythonBinSync(options) {
+  const opts = Object.assign({}, DEFAULTS, options)
+  try {
+    return fs.readFileSync(opts.pythonBinFile, {encoding: 'utf8'}).trim()
+  } catch (e) {
+    const pythonBin = locatePythonSync(opts)
+    try {
+      fs.writeFileSync(opts.pythonBinFile, pythonBin, {encoding: 'utf8'})
+    } catch (e) {}
+    return pythonBin
+  }
 }
 
 // Detect an existing dowsing-rod PATH injection. If one is present, shuffle it to the front of the PATH and return
@@ -48,7 +63,7 @@ function detectEnv(env) {
 }
 
 function modifyEnv(env, pythonBin) {
-  env.PYTHON = pythonBin
+  env.CHOSEN_PYTHON2 = pythonBin
 
   const binPath = path.join(__dirname, 'py2-bin')
   if (env.PATH) {
@@ -67,9 +82,20 @@ function setPythonEnv(options, env) {
     .then(pythonBin => modifyEnv(env, pythonBin))
 }
 
+function setPythonEnvSync(options, env) {
+  if (detectEnv(env)) {
+    return
+  }
+
+  const pythonBin = getPythonBinSync(options)
+  modifyEnv(env, pythonBin)
+}
+
 module.exports = {
   detectEnv,
   modifyEnv,
   getPythonBin,
-  setPythonEnv
+  getPythonBinSync,
+  setPythonEnv,
+  setPythonEnvSync
 }

@@ -1,3 +1,15 @@
-#!/bin/sh
+#!/usr/bin/env node
 
-exec "${PYTHON}" "$@"
+const childProcess = require('child_process')
+const rest = process.argv.slice(2)
+
+const child = childProcess.spawn(process.env.CHOSEN_PYTHON2, rest, {stdio: 'inherit'})
+
+child.on('error', err => {
+  console.error(err)
+  process.exit(1)
+})
+
+child.on('exit', (code) => {
+  process.exit(code !== null ? code : 1);
+})

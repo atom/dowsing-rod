@@ -79,6 +79,10 @@ function locatePython(options) {
     return Promise.resolve(process.env.PYTHON)
   }
 
+  if (process.env.CHOSEN_PYTHON2) {
+    return Promise.resolve(process.env.CHOSEN_PYTHON2)
+  }
+
   return readNpmConfig(options)
     .then(pythonBin => {
       if (pythonBin) {
